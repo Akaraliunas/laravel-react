@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Wishlist;
 
 class Product extends Model
 {
@@ -23,4 +24,9 @@ class Product extends Model
         'price',
         'availability'
     ];
+
+    public function wishlist()
+    {
+        return $this->hasMany(Wishlist::class);
+    }
 }

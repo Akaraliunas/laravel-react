@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProductsController;
+use App\Http\Controllers\WishlistController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -35,12 +36,14 @@ Route::get('admin/products', function () {
 })->middleware(['auth', 'verified'])->name('admin.products.index');
 
 
+
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     Route::get('/admin/products', [ProductsController::class, 'index'])->name('admin.products.index');
+    Route::get('/admin/wishlist', [WishlistController::class, 'index'])->name('admin.wishlist.index');
 });
 
 require __DIR__.'/auth.php';
