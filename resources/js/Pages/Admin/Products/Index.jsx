@@ -6,7 +6,7 @@ export default function ProductsIndex({ auth, products }) {
         <AuthenticatedLayout
             user={auth.user}
             header={
-                <h2 className="font-semibold text-xl text-gray-800 leading-tight">
+                <h2 className="text-xl font-semibold leading-tight text-gray-800">
                     Products
                 </h2>
             }
@@ -14,8 +14,8 @@ export default function ProductsIndex({ auth, products }) {
             <Head title="Products" />
 
             <div className="py-12">
-                <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                    <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
+                    <div className="overflow-hidden bg-white shadow-sm sm:rounded-lg">
                         <div className="p-6 text-gray-900">
                             {products &&
                                 products.map(
@@ -27,7 +27,7 @@ export default function ProductsIndex({ auth, products }) {
                                         availability,
                                     }) => (
                                             <div className="mb-3" key={id}>
-                                                <div className="flex items-center flex-col sm:flex-row justify-between">
+                                                <div className="flex flex-col items-center justify-between sm:flex-row">
                                                     <div className="flex items-center">
 
                                                         <div className="max-w-[10%] bg-red-50 dark:bg-red-800/20 flex items-center justify-center rounded-xl overflow-hidden mr-6">
@@ -42,7 +42,7 @@ export default function ProductsIndex({ auth, products }) {
                                                     </div>
 
                                                     <div className="flex items-center">
-                                                        <div className="flex text-xl font-bold text-gray-900 mr-6">
+                                                        <div className="flex mr-6 text-xl font-bold text-gray-900">
                                                             {price}&nbsp;€
                                                         </div>
 
@@ -61,9 +61,9 @@ export default function ProductsIndex({ auth, products }) {
 
                                                            <button>
                                                                 <svg className="w-5 h-5" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20">
-                                                                    <path fill-rule="evenodd"
+                                                                    <path fillRule="evenodd"
                                                                     d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
-                                                                    clip-rule="evenodd"></path>
+                                                                    clipRule="evenodd"></path>
                                                                 </svg>
                                                            </button>
                                                         </div>

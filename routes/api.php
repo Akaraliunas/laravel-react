@@ -20,9 +20,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', function (Request $request) {
         return $request->user();
     });
-
-    Route::post('/wishlist/{id}', [WishlistController::class, 'store'])->name('wishlist.store');
-    Route::delete('/wishlist/{id}', [WishlistController::class, 'destroy'])->name('wishlist.remove');
 });
 
 

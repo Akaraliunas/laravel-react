@@ -31,19 +31,16 @@ Route::get('admin/dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('admin.dashboard.index');
 
-Route::get('admin/products', function () {
-    return Inertia::render('ProductsIndex');
-})->middleware(['auth', 'verified'])->name('admin.products.index');
-
-
-
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     Route::get('/admin/products', [ProductsController::class, 'index'])->name('admin.products.index');
-    Route::get('/admin/wishlist', [WishlistController::class, 'index'])->name('admin.wishlist.index');
+
+    Route::get('/admin/wishlist', [WishlistController::class, 'index'])->name('wishlist.index');
+    Route::post('/admin/wishlist', [WishlistController::class, 'store'])->name('wishlist.store');
+    Route::delete('/admin/wishlist', [WishlistController::class, 'destroy'])->name('wishlist.destroy');
 });
 
 require __DIR__.'/auth.php';

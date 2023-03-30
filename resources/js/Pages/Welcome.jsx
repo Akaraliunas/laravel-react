@@ -1,13 +1,14 @@
 import { Link, Head, useForm } from "@inertiajs/react";
 import { useState, useEffect } from "react";
 import TextInput from '@/Components/TextInput';
+import InputError from '@/Components/InputError';
 
-export default function Welcome({ auth, laravelVersion, phpVersion }) {
+export default function Welcome({ auth, laravelVersion, phpVersion, flash_message, flash_message_warn }) {
     const [products, setData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    const { data, post, processing, errors, reset } = useForm({
+    const { data, post, errors } = useForm({
         user_id: '',
         product_id: '',
     });
@@ -38,7 +39,16 @@ export default function Welcome({ auth, laravelVersion, phpVersion }) {
     const wishlistStore = (userId, id) => (e) => {
         e.preventDefault();
 
-        post(route('wishlist.store', {'id': id}));
+        data.user_id = userId;
+        data.product_id = id;
+
+        post(route('wishlist.store'), {
+            onSuccess: () => activeteHeart(id),
+        });
+    };
+
+    const activeteHeart = (id) => {
+        console.log(id)
     };
 
     return (
@@ -47,12 +57,21 @@ export default function Welcome({ auth, laravelVersion, phpVersion }) {
             <div className="relative min-h-screen bg-gray-100 bg-center sm:flex sm:justify-center sm:items-center bg-dots-darker dark:bg-dots-lighter dark:bg-gray-900 selection:bg-red-500 selection:text-white">
                 <div className="p-6 text-right sm:fixed sm:top-0 sm:right-0">
                     {auth.user ? (
-                        <Link
-                            href={route("admin.dashboard.index")}
-                            className="font-semibold text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white focus:outline focus:outline-2 focus:rounded-sm focus:outline-red-500"
-                        >
-                            Dashboard
-                        </Link>
+                        <div className="flex">
+                            <Link
+                                href={route("admin.dashboard.index")}
+                                className="font-semibold text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white focus:outline focus:outline-2 focus:rounded-sm focus:outline-red-500"
+                            >
+                                Dashboard
+                            </Link>
+                            <div className="w-3"></div>
+                            <Link
+                                href={route("wishlist.index")}
+                                className="font-semibold text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white focus:outline focus:outline-2 focus:rounded-sm focus:outline-red-500"
+                            >
+                                Wishlist
+                            </Link>
+                        </div>
                     ) : (
                         <>
                             <Link
@@ -74,6 +93,23 @@ export default function Welcome({ auth, laravelVersion, phpVersion }) {
 
                 <div className="p-6 mx-auto max-w-7xl lg:p-8">
                     <h2 className="mb-5 text-xl font-semibold leading-tight text-gray-900 dark:text-white">Products</h2>
+
+                    {flash_message ? (
+                        <div className="p-4 mb-4 text-sm text-green-700 bg-green-100 rounded-lg dark:bg-green-200 dark:text-green-800" role="alert">
+                        {flash_message}
+                    </div>
+                    ) : (
+                        <></>
+                    )}
+
+                    {flash_message_warn ? (
+                        <div className="p-4 mb-4 text-sm text-blue-700 bg-blue-100 rounded-lg dark:bg-blue-200 dark:text-blue-800" role="alert">
+                        {flash_message_warn}
+                    </div>
+                    ) : (
+                        <></>
+                    )}
+
                     <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:gap-8">
                         {products &&
                             products.map(
@@ -95,30 +131,37 @@ export default function Welcome({ auth, laravelVersion, phpVersion }) {
 
                                                         <div className="text-base font-bold text-gray-900 dark:text-white">{price} €</div>
 
-                                                        <form onSubmit={wishlistStore(auth.user.id ,id)}>
+
+                                                        {auth.user ? (
+                                                            <form onSubmit={wishlistStore(auth.user.id, id)}>
+
                                                             <TextInput
                                                                 id="user_id"
                                                                 type="hidden"
                                                                 name="user_id"
                                                                 value={auth.user.id}
-                                                                onChange={(e) => setData('user_id', e.target.value)}
                                                             />
+                                                            <InputError message={errors.user_id} className="mt-2" />
+
                                                             <TextInput
                                                                 id="product_id"
                                                                 type="hidden"
                                                                 name="product_id"
                                                                 value={id}
-                                                                onChange={(e) => setData('product_id', e.target.value)}
                                                             />
+                                                            <InputError message={errors.product_id} className="mt-2" />
 
-                                                            <button  className="w-5 h-5 scale-100 motion-safe:hover:scale-[1.2] transition-all duration-250">
+                                                            <button className="w-5 h-5 scale-100 motion-safe:hover:scale-[1.2] transition-all duration-250">
                                                                 <svg className="w-full h-full" version="1.1" id="Layer_1" viewBox="0 0 512.003 512.003">
                                                                     <g>
                                                                         <path fill="white" active="#E8594B" d="M256.001,105.69c19.535-49.77,61.325-87.79,113.231-87.79c43.705,0,80.225,22.572,108.871,54.44   c39.186,43.591,56.497,139.193-15.863,209.24c-37.129,35.946-205.815,212.524-205.815,212.524S88.171,317.084,50.619,281.579   C-22.447,212.495-6.01,116.919,34.756,72.339c28.919-31.629,65.165-54.44,108.871-54.44   C195.532,17.899,236.466,55.92,256.001,105.69"></path>
                                                                     </g>
                                                                 </svg>
                                                             </button>
-                                                        </form>
+                                                            </form>
+                                                        ) : (
+                                                            <></>
+                                                        )}
 
                                                     </div>
                                                 </div>
