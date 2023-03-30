@@ -14,7 +14,7 @@ export default function Welcome({ auth, laravelVersion, phpVersion, flash_messag
     });
 
     useEffect(() => {
-        fetch("http://laravel-react.test/api/products")
+        fetch("http://127.0.0.1:8000/api/products")
             .then((response) => {
                 if (!response.ok) {
                     throw new Error(
