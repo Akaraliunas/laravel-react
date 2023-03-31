@@ -1,9 +1,10 @@
-## Laravel + React.js
+## Laravel + React.js wishlist app
 
 Application consists of:
-- managing products and showing wishlisted products.
-- displaying products with the option to add to the wishlist.
-
+- User login and registration part.
+- Only registered users can wishlist products.
+- Displaying products with the option to add to the wishlist.
+- Showing all wishlisted products for particular logged in user.
 
 Install projct dependancies: 
 - composer install
@@ -11,6 +12,6 @@ Install projct dependancies:
 
 Launch project:
 - php artisan migrate
+- php artisan db:seed --class=ProductsTableSeeder
 - php artisan serve
-- npm run dev
-- 
+- **npm run dev** or **npm run build**

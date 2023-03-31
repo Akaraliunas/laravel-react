@@ -17,7 +17,7 @@ class ProductsTableSeeder extends Seeder
         // Create 50 product records
         for ($i = 0; $i < 50; $i++) {
             Product::create([
-                'title' => $faker->title,
+                'title' => $faker->text(50),
                 'description' => $faker->paragraph,
                 'price' => $faker->randomNumber(2),
                 'availability' => $faker->boolean(50)
