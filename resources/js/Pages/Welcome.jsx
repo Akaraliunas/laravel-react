@@ -3,8 +3,7 @@ import { useState, useEffect } from "react";
 import TextInput from '@/Components/TextInput';
 import InputError from '@/Components/InputError';
 
-export default function Welcome({ auth, laravelVersion, phpVersion, flash_message, flash_message_warn }) {
-    const [products, setData] = useState(null);
+export default function Welcome({ auth, laravelVersion, phpVersion, flash_message, flash_message_warn, products, wishlistedProducts}) {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
@@ -13,42 +12,16 @@ export default function Welcome({ auth, laravelVersion, phpVersion, flash_messag
         product_id: '',
     });
 
-    useEffect(() => {
-        fetch("http://127.0.0.1:8000/api/products")
-            .then((response) => {
-                if (!response.ok) {
-                    throw new Error(
-                        `This is an HTTP error: The status is ${response.status}`
-                    );
-                }
-                return response.json();
-            })
-            .then((actualData) => {
-                setData(actualData);
-                setError(null);
-            })
-            .catch((err) => {
-                setError(err.message);
-                setData(null);
-            })
-            .finally(() => {
-                setLoading(false);
-            });
-    }, []);
-
     const wishlistStore = (userId, id) => (e) => {
         e.preventDefault();
-
         data.user_id = userId;
         data.product_id = id;
 
-        post(route('wishlist.store'), {
-            onSuccess: () => activeteHeart(id),
-        });
+        post(route('wishlist.store'));
     };
 
-    const activeteHeart = (id) => {
-        console.log(id)
+    const isActiveHeart = (id) => {
+        return wishlistedProducts.data &&wishlistedProducts.data.findIndex((product) => product.product_id == id) != -1
     };
 
     return (
@@ -135,29 +108,28 @@ export default function Welcome({ auth, laravelVersion, phpVersion, flash_messag
                                                         {auth.user ? (
                                                             <form onSubmit={wishlistStore(auth.user.id, id)}>
 
-                                                            <TextInput
-                                                                id="user_id"
-                                                                type="hidden"
-                                                                name="user_id"
-                                                                value={auth.user.id}
-                                                            />
-                                                            <InputError message={errors.user_id} className="mt-2" />
+                                                                <TextInput
+                                                                    id="user_id"
+                                                                    type="hidden"
+                                                                    name="user_id"
+                                                                    value={auth.user.id}
+                                                                />
+                                                                <InputError message={errors.user_id} className="mt-2" />
 
-                                                            <TextInput
-                                                                id="product_id"
-                                                                type="hidden"
-                                                                name="product_id"
-                                                                value={id}
-                                                            />
-                                                            <InputError message={errors.product_id} className="mt-2" />
-
-                                                            <button className="w-5 h-5 scale-100 motion-safe:hover:scale-[1.2] transition-all duration-250">
-                                                                <svg className="w-full h-full" version="1.1" id="Layer_1" viewBox="0 0 512.003 512.003">
-                                                                    <g>
-                                                                        <path fill="white" active="#E8594B" d="M256.001,105.69c19.535-49.77,61.325-87.79,113.231-87.79c43.705,0,80.225,22.572,108.871,54.44   c39.186,43.591,56.497,139.193-15.863,209.24c-37.129,35.946-205.815,212.524-205.815,212.524S88.171,317.084,50.619,281.579   C-22.447,212.495-6.01,116.919,34.756,72.339c28.919-31.629,65.165-54.44,108.871-54.44   C195.532,17.899,236.466,55.92,256.001,105.69"></path>
-                                                                    </g>
-                                                                </svg>
-                                                            </button>
+                                                                <TextInput
+                                                                    id="product_id"
+                                                                    type="hidden"
+                                                                    name="product_id"
+                                                                    value={id}
+                                                                />
+                                                                <InputError message={errors.product_id} className="mt-2" />
+                                                                <button className="w-5 h-5 scale-100 motion-safe:hover:scale-[1.2] transition-all duration-250">
+                                                                    <svg className="w-full h-full" version="1.1" id="Layer_1" viewBox="0 0 512.003 512.003">
+                                                                        <g>
+                                                                            <path fill={isActiveHeart(id) ? '#E8594B' : 'white'} active="#E8594B" d="M256.001,105.69c19.535-49.77,61.325-87.79,113.231-87.79c43.705,0,80.225,22.572,108.871,54.44   c39.186,43.591,56.497,139.193-15.863,209.24c-37.129,35.946-205.815,212.524-205.815,212.524S88.171,317.084,50.619,281.579   C-22.447,212.495-6.01,116.919,34.756,72.339c28.919-31.629,65.165-54.44,108.871-54.44   C195.532,17.899,236.466,55.92,256.001,105.69"></path>
+                                                                        </g>
+                                                                    </svg>
+                                                                </button>
                                                             </form>
                                                         ) : (
                                                             <></>

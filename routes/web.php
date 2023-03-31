@@ -5,7 +5,11 @@ use App\Http\Controllers\ProductsController;
 use App\Http\Controllers\WishlistController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
+
 use Inertia\Inertia;
+use App\Models\Product;
+use App\Models\Wishlist;
 
 /*
 |--------------------------------------------------------------------------
@@ -24,6 +28,8 @@ Route::get('/', function () {
         'canRegister' => Route::has('register'),
         'laravelVersion' => Application::VERSION,
         'phpVersion' => PHP_VERSION,
+        'products' => Product::all(),
+        'wishlistedProducts' => Wishlist::where("user_id", "=", Auth::id())->orderby('id', 'asc')->paginate(100),
     ]);
 });
 
@@ -38,8 +44,8 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/admin/products', [ProductsController::class, 'index'])->name('admin.products.index');
 
+    Route::post('/', [WishlistController::class, 'store'])->name('wishlist.store');
     Route::get('/admin/wishlist', [WishlistController::class, 'index'])->name('wishlist.index');
-    Route::post('/admin/wishlist', [WishlistController::class, 'store'])->name('wishlist.store');
     Route::delete('/admin/wishlist', [WishlistController::class, 'destroy'])->name('wishlist.destroy');
 });
 

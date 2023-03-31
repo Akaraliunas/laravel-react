@@ -6,7 +6,6 @@ use Illuminate\Http\Request;
 use App\Models\Product;
 use Inertia\Inertia;
 use App\Models\Wishlist;
-use Illuminate\Support\Facades\Auth;
 
 class WishlistController extends Controller
 {
@@ -18,16 +17,7 @@ class WishlistController extends Controller
     public function index(Request $request)
     {
         $user = $request->user();
-        $wishlist = Wishlist::where("user_id", "=", $user->id)->orderby('id', 'asc')->paginate(10);
-
-        $wishlistedProducts = [];
-
-        foreach ($wishlist as $wishlistItem ) {
-            $wishlistedProducts[] = [
-                'product' => $wishlistItem->product,
-                'wishlist' => $wishlistItem,
-            ];
-        }
+        $wishlistedProducts = $this->getUserProducts($user->id);
 
         return Inertia::render('Admin/Wishlist/Index', [
             'user' => $user,
@@ -43,27 +33,33 @@ class WishlistController extends Controller
                 'product_id' =>'required',
             )
         );
-        $products = Product::all();
-        $status = Wishlist::where('user_id', Auth::user()->id)
+
+        $user = $request->user();
+
+        $status = Wishlist::where('user_id', $user->id)
         ->where('product_id', $request->product_id)
         ->first();
 
         if (isset($status->user_id) && isset($request->product_id)) {
-            return Inertia::render('Welcome', [
-                'flash_message_warn' => 'Product is already in your wishlist!',
-                'products' => $products,
-            ]);
+            $message = 'Product is already in your wishlist!';
         } else {
             $wishlist = new Wishlist;
             $wishlist->user_id = $request->user_id;
             $wishlist->product_id = $request->product_id;
             $wishlist->save();
 
-            return Inertia::render('Welcome', [
-                'flash_message' => '"'. $wishlist->product->title.'" added to your wishlist.',
-                'products' => $products,
-            ]);
+            $message = '"'. $wishlist->product->title.'" added to your wishlist.';
         }
+
+        $products = Product::all();
+        $wishlistedProducts = Wishlist::where("user_id", "=", $user->id)->orderby('id', 'asc')->paginate(100);
+
+
+        return Inertia::render('Welcome', [
+            'flash_message' => $message,
+            'products' => $products,
+            'wishlistedProducts' => $wishlistedProducts,
+        ]);
     }
 
     public function destroy(Request $request)
@@ -72,25 +68,26 @@ class WishlistController extends Controller
         $wishlist = Wishlist::findOrFail($request->wishlistId);
         $wishlist->delete();
 
-        $wishlistProducts = Wishlist::where("user_id", "=", $request->userId)->orderby('id', 'asc')->paginate(10);
-        $wishlistedProducts = [];
-
-        foreach ($wishlistProducts as $wishlistProduct ) {
-            $wishlistedProducts[] = [
-                'product' => $wishlistProduct->product,
-                'wishlist' => $wishlistProduct,
-            ];
-        }
+        $wishlistedProducts = $this->getUserProducts($request->userId);
 
         return Inertia::render('Admin/Wishlist/Index', [
             'flash_message' => '"'. $wishlist->product->title.'" successfully deleted',
             'wishlistedProducts' => $wishlistedProducts
         ]);
+    }
 
-        // return redirect()->route('wishlist.index')
-        //     ->with(
-        //         'flash_message',
-        //         'Product successfully deleted'
-        //     );
+    public function getUserProducts($userId)
+    {
+        $wishlist = Wishlist::where("user_id", "=", $userId)->orderby('id', 'asc')->paginate(100);
+        $wishlistedProducts = [];
+
+        foreach ($wishlist as $wishlistItem ) {
+            $wishlistedProducts[] = [
+                'product' => $wishlistItem->product,
+                'wishlist' => $wishlistItem,
+            ];
+        }
+
+        return $wishlistedProducts;
     }
 }
