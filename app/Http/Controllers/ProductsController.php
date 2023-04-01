@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Models\Product;
+use App\Models\Wishlist;
+use Illuminate\Support\Facades\Auth;
 
 class ProductsController extends Controller
 {
@@ -15,13 +17,6 @@ class ProductsController extends Controller
         return Inertia::render('Admin/Products/Index', [
             'products' => $products,
         ]);
-    }
-
-    public function indexAll()
-    {
-        $products = Product::all();
-
-        return $products;
     }
 
     public function create()
@@ -81,4 +76,35 @@ class ProductsController extends Controller
             ->with('success', 'Product deleted successfully');
     }
 
+    public function search(Request $request)
+    {
+        $key = $request->key;
+
+        if ($key) {
+            $products = Product::where(
+                [
+                    ['title', 'LIKE', "%". $key ."%"],
+                    ['availability', '1']
+                ]
+            )
+            ->orWhere(
+                [
+                    ['description', 'LIKE', "%". $key ."%"],
+                    ['availability', '1']
+                ]
+            )
+            ->get();
+            $flashMessage = '"'. count($products) .'" products found';
+        } else {
+            $products = Product::all();
+            $flashMessage = false;
+        }
+
+        return Inertia::render('Welcome', [
+            'searchKeyword' => $key,
+            'flash_message' => $flashMessage,
+            'products' => $products,
+            'wishlistedProducts' => Wishlist::where("user_id", "=", Auth::id())->orderby('id', 'asc')->paginate(100),
+        ]);
+    }
 }

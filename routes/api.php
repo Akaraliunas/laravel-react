@@ -21,7 +21,3 @@ Route::middleware('auth:sanctum')->group(function () {
         return $request->user();
     });
 });
-
-
-Route::get('products', [ProductsController::class, 'indexAll']);
-Route::get('products/{product}', [ProductsController::class, 'show']);

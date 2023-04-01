@@ -22,17 +22,6 @@ use App\Models\Wishlist;
 |
 */
 
-Route::get('/', function () {
-    return Inertia::render('Welcome', [
-        'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
-        'laravelVersion' => Application::VERSION,
-        'phpVersion' => PHP_VERSION,
-        'products' => Product::all(),
-        'wishlistedProducts' => Wishlist::where("user_id", "=", Auth::id())->orderby('id', 'asc')->paginate(100),
-    ]);
-});
-
 Route::get('admin/dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('admin.dashboard.index');
@@ -48,5 +37,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/admin/wishlist', [WishlistController::class, 'index'])->name('wishlist.index');
     Route::delete('/admin/wishlist', [WishlistController::class, 'destroy'])->name('wishlist.destroy');
 });
+
+Route::get('/', [ProductsController::class, 'search'])->name('products.filter');
 
 require __DIR__.'/auth.php';

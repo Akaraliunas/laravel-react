@@ -5,7 +5,6 @@ import InputError from '@/Components/InputError';
 
 export default function WishlistIndex({ auth, user, wishlistedProducts, flash_message }) {
 
-    console.log(wishlistedProducts);
     const {
         data,
         delete: destroy,
